@@ -23,6 +23,7 @@ const templateSlice = createSlice({
     },
     clearCurrentTemplateIndex: (state) => {
       state.index = null;
+      state.templates = [];
     },
   },
 });
