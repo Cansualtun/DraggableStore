@@ -1,10 +1,5 @@
-import {
-  FaUpload,
-  FaKeyboard,
-  FaCheckSquare,
-  FaFont,
-  FaImage,
-} from "react-icons/fa";
+import { FaUpload, FaKeyboard, FaCheckSquare, FaImage } from "react-icons/fa";
+import { CiLogout } from "react-icons/ci";
 import PropTypes from "prop-types";
 import { Button } from "../ui/button";
 import { logout } from "@/utils/authUtils";
@@ -30,12 +25,6 @@ const componentList = [
     type: "checkbox",
   },
   {
-    id: "text",
-    name: "Text",
-    icon: <FaFont size={24} />,
-    type: "text",
-  },
-  {
     id: "image",
     name: "Image",
     icon: <FaImage size={24} />,
@@ -46,9 +35,9 @@ const componentList = [
 const ComponentList = ({ onDragStart }) => {
   const navigate = useNavigate();
   return (
-    <div className="w-64 bg-white p-4 shadow-lg">
+    <div className="w-64 bg-white p-4 shadow-lg flex flex-col min-h-screen">
       <h2 className="text-lg font-semibold mb-4">Components</h2>
-      <div className="space-y-2">
+      <div className="space-y-2 flex-grow">
         {componentList.map((component) => (
           <div
             key={component.id}
@@ -60,15 +49,17 @@ const ComponentList = ({ onDragStart }) => {
             <span className="ml-2">{component.name}</span>
           </div>
         ))}
-        <Button
-          onClick={() => {
-            logout();
-            navigate("/login");
-          }}
-        >
-          Logout
-        </Button>
       </div>
+      <Button
+        onClick={() => {
+          logout();
+          navigate("/login");
+        }}
+        className="w-full mt-4"
+      >
+        <CiLogout />
+        Logout
+      </Button>
     </div>
   );
 };

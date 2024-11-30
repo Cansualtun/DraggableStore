@@ -11,10 +11,11 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { validateUser, initializeUsers } from "@/utils/authUtils";
-import toast from "react-hot-toast";
+import { useToast } from "@/hooks/use-toast";
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -32,8 +33,11 @@ const LoginForm = () => {
     e.preventDefault();
     try {
       const user = validateUser(formData.email, formData.password);
+      toast({
+        position: "top-center",
+        description: "Hoşgeldiniz!",
+      });
       navigate("/");
-      toast.success("Hoşgeldiniz!");
       if (!user) {
         navigate("/login");
       } else {
