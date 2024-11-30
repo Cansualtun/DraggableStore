@@ -1,17 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = { templates: [], index: null };
+const initialState = {
+  templates: [],
+  index: null,
+};
 
-const templateSlice = createSlice({
+export const templateSlice = createSlice({
   name: "template",
-  initialState: initialState,
+  initialState,
   reducers: {
     addTemplate: (state, action) => {
-      state.templates = [...state.templates, action.payload];
+      state.templates.push(action.payload);
     },
     updateTemplate: (state, action) => {
       let filtered = state.templates.filter(
-        (item) => item.id !== action.payload.id
+        (item) => item.instanceId !== action.payload.instanceId
       );
       state.templates = [...filtered, action.payload];
     },
