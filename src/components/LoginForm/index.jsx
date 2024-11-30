@@ -10,8 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { validateUser } from "@/utils/authUtils";
+import { validateUser, initializeUsers } from "@/utils/authUtils";
 import toast from "react-hot-toast";
+
 const LoginForm = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -21,6 +22,7 @@ const LoginForm = () => {
 
   useEffect(() => {
     const user = localStorage.getItem("isAuthenticated");
+    initializeUsers();
     if (user) {
       navigate("/");
     }

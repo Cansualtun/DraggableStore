@@ -3,9 +3,9 @@ export const initializeUsers = () => {
     const users = [
       {
         id: 1,
-        email: import.meta.env.VITE_USER1_EMAIL,
-        password: import.meta.env.VITE_USER1_PASSWORD,
-        role: import.meta.env.VITE_USER1_ROLE,
+        email: "admin@example.com",
+        password: "Test109*",
+        role: "admin",
       },
       {
         id: 2,
