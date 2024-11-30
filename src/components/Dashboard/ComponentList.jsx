@@ -4,6 +4,8 @@ import PropTypes from "prop-types";
 import { Button } from "../ui/button";
 import { logout } from "@/utils/authUtils";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addFullTemplate, currentTemplateIndex } from "@/store/templateSlice";
 
 const componentList = [
   {
@@ -34,7 +36,15 @@ const componentList = [
 
 const ComponentList = ({ onDragStart, recentComponents }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const list = JSON.parse(localStorage.getItem("templateList"));
 
+  console.log(list, "of");
+
+  const handleTemplate = (items, index) => {
+    dispatch(addFullTemplate(items));
+    dispatch(currentTemplateIndex(index));
+  };
   return (
     <div className="w-64 bg-white p-4 shadow-lg flex flex-col min-h-screen">
       <h2 className="text-lg font-semibold mb-4">Components</h2>
@@ -76,7 +86,20 @@ const ComponentList = ({ onDragStart, recentComponents }) => {
           </div>
         ))}
       </div>
-
+      <div>
+        <p>Recently</p>
+        {list?.map((item, index) => (
+          <div key={index}>
+            <Button
+              onClick={() => {
+                handleTemplate(item, index);
+              }}
+            >
+              <p>Template - {index}</p>
+            </Button>
+          </div>
+        ))}
+      </div>
       <Button
         onClick={() => {
           logout();

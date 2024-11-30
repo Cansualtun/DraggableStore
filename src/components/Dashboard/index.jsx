@@ -8,6 +8,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useRef, useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "../ui/button";
+import { useDispatch, useSelector } from "react-redux";
+import { addDesignElement } from "@/store/dashboardSlice";
+import {
+  updateTemplate,
+  clearCurrentTemplateIndex,
+} from "@/store/templateSlice";
 
 const renderComponent = (type, style = {}, properties = {}) => {
   const commonStyles = {
@@ -84,14 +91,21 @@ const DashboardComponent = () => {
     handleDragStart,
     handleDrop,
     handleUpdateElement,
+    setDesignElements,
   } = useDragAndDrop();
 
   const { toast } = useToast();
   const designAreaRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [draggedElement, setDraggedElement] = useState(null);
+  const [design, setDesign] = useState([]);
+  const [isNewTemplate, setIsNewTemplate] = useState(false);
   const [startPosition, setStartPosition] = useState({ x: 0, y: 0 });
-
+  const test = useSelector((state) => state.template?.templates);
+  const currentTemplate = useSelector((state) => state.template?.index);
+  console.log(test, "dobis");
+  const dispatch = useDispatch();
+  console.log(draggedElement, "halidox");
   const handleDragOver = (e) => {
     e.preventDefault();
   };
@@ -99,7 +113,7 @@ const DashboardComponent = () => {
   const handleDragLeave = (e) => {
     e.preventDefault();
   };
-
+  console.log(isNewTemplate, "ehe");
   const handleElementMouseDown = (e, element) => {
     if (e.button !== 0) return;
     setIsDragging(true);
@@ -112,6 +126,14 @@ const DashboardComponent = () => {
       y: e.clientY - rect.top,
     });
   };
+  useEffect(() => {
+    setDesign(designElements);
+  }, [designElements]);
+
+  useEffect(() => {
+    setDesign(test);
+    setDesignElements(test);
+  }, [test]);
 
   const handleMouseMove = (e) => {
     if (!isDragging || !draggedElement || !designAreaRef.current) return;
@@ -135,7 +157,12 @@ const DashboardComponent = () => {
       newX = Math.max(0, Math.min(newX, maxX));
       newY = Math.max(0, Math.min(newY, maxY));
     }
-
+    dispatch(
+      updateTemplate({
+        ...draggedElement,
+        position: { x: newX, y: newY },
+      })
+    );
     handleUpdateElement({
       ...draggedElement,
       position: { x: newX, y: newY },
@@ -159,43 +186,82 @@ const DashboardComponent = () => {
     };
   }, [isDragging, draggedElement]);
 
+  const handleSave = () => {
+    if (currentTemplate !== null && !isNewTemplate) {
+      const list = JSON.parse(localStorage.getItem("templateList"));
+      const filteredList = list.filter((_, index) => {
+        return index !== currentTemplate;
+      });
+      console.log(list, "list");
+      console.log(test, "test");
+      console.log(filteredList, "filteredList");
+      const parsedData = [...filteredList, test];
+      localStorage.setItem("templateList", JSON.stringify(parsedData));
+    } else {
+      dispatch(addDesignElement());
+      const currentTemplate =
+        JSON.parse(localStorage.getItem("templateList")) ?? [];
+      const parsedData = [...currentTemplate, test];
+      localStorage.setItem("templateList", JSON.stringify(parsedData));
+    }
+  };
+
+  const clearDesign = () => {
+    dispatch(clearCurrentTemplateIndex());
+    setDesignElements([]);
+  };
   return (
-    <div className="flex h-screen bg-gray-100">
-      <ComponentList onDragStart={handleDragStart} />
-      <div className="flex-1 p-8">
-        <div
-          ref={designAreaRef}
-          className="bg-white h-full rounded-lg shadow-lg relative overflow-hidden"
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-        >
-          {designElements.map((element) => (
-            <div
-              id={element.instanceId}
-              key={element.instanceId}
-              className={`absolute cursor-move select-none ${
-                selectedElement?.instanceId === element.instanceId
-                  ? "ring-2 ring-blue-500"
-                  : ""
-              }`}
-              onMouseDown={(e) => handleElementMouseDown(e, element)}
-              style={{
-                left: `${element.position.x}px`,
-                top: `${element.position.y}px`,
-                touchAction: "none",
-              }}
-            >
-              {renderComponent(element.type, element.style, element.properties)}
-            </div>
-          ))}
-        </div>
-      </div>
-      <PropertyPanel
-        selectedElement={selectedElement}
-        onUpdateElement={handleUpdateElement}
+    <>
+      <Button onClick={handleSave}>Kaydet</Button>
+      <Checkbox
+        checked={isNewTemplate}
+        onCheckedChange={(e) => setIsNewTemplate(e)}
+        id="isNewTemplate"
       />
-    </div>
+      <label htmlFor="isNew">Yeni Bir Template Olarak Kaydet</label>
+      <Button onClick={clearDesign}>Clear Design</Button>
+      <div className="flex h-screen bg-gray-100" id="anan">
+        <ComponentList onDragStart={handleDragStart} />
+
+        <div className="flex-1 p-8">
+          <div
+            ref={designAreaRef}
+            className="bg-white h-full rounded-lg shadow-lg relative overflow-hidden"
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+          >
+            {design.map((element) => (
+              <div
+                id={element.instanceId}
+                key={element.instanceId}
+                className={`absolute cursor-move select-none ${
+                  selectedElement?.instanceId === element.instanceId
+                    ? "ring-2 ring-blue-500"
+                    : ""
+                }`}
+                onMouseDown={(e) => handleElementMouseDown(e, element)}
+                style={{
+                  left: `${element.position.x}px`,
+                  top: `${element.position.y}px`,
+                  touchAction: "none",
+                }}
+              >
+                {renderComponent(
+                  element.type,
+                  element.style,
+                  element.properties
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+        <PropertyPanel
+          selectedElement={selectedElement}
+          onUpdateElement={handleUpdateElement}
+        />
+      </div>
+    </>
   );
 };
 

@@ -1,8 +1,11 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { addTemplate } from "@/store/templateSlice";
 
 export const useDragAndDrop = () => {
   const [designElements, setDesignElements] = useState([]);
   const [selectedElement, setSelectedElement] = useState(null);
+  const dispatch = useDispatch();
 
   const handleDragStart = (e, component) => {
     const componentData = {
@@ -33,7 +36,7 @@ export const useDragAndDrop = () => {
         position: { x, y },
         instanceId: `${component.id}-${Date.now()}`,
       };
-
+      dispatch(addTemplate(newElement));
       setDesignElements((prev) => [...prev, newElement]);
     } catch (error) {
       console.error("Drop error:", error);
@@ -56,5 +59,6 @@ export const useDragAndDrop = () => {
     handleDragStart,
     handleDrop,
     handleUpdateElement,
+    setDesignElements,
   };
 };
