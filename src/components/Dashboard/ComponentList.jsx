@@ -6,6 +6,9 @@ import {
   FaImage,
 } from "react-icons/fa";
 import PropTypes from "prop-types";
+import { Button } from "../ui/button";
+import { logout } from "@/utils/authUtils";
+import { useNavigate } from "react-router-dom";
 
 const componentList = [
   {
@@ -41,6 +44,7 @@ const componentList = [
 ];
 
 const ComponentList = ({ onDragStart }) => {
+  const navigate = useNavigate();
   return (
     <div className="w-64 bg-white p-4 shadow-lg">
       <h2 className="text-lg font-semibold mb-4">Components</h2>
@@ -56,6 +60,14 @@ const ComponentList = ({ onDragStart }) => {
             <span className="ml-2">{component.name}</span>
           </div>
         ))}
+        <Button
+          onClick={() => {
+            logout();
+            navigate("/login");
+          }}
+        >
+          Logout
+        </Button>
       </div>
     </div>
   );

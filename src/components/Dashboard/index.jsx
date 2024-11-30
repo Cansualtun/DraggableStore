@@ -63,7 +63,6 @@ const DashboardComponent = () => {
   return (
     <div className="flex h-screen bg-gray-100">
       <ComponentList onDragStart={handleDragStart} />
-
       <div className="flex-1 p-8">
         <div
           className="bg-white h-full rounded-lg shadow-lg relative"

@@ -1,17 +1,3 @@
-// utils/authUtils.js
-
-export const encryptData = (data) => {
-  return btoa(JSON.stringify(data));
-};
-
-export const decryptData = (encrypted) => {
-  try {
-    return JSON.parse(atob(encrypted));
-  } catch {
-    return null;
-  }
-};
-
 export const initializeUsers = () => {
   if (!localStorage.getItem("users")) {
     const users = [
@@ -28,24 +14,40 @@ export const initializeUsers = () => {
         role: import.meta.env.VITE_USER2_ROLE,
       },
     ];
+    localStorage.setItem("users", JSON.stringify(users));
 
-    localStorage.setItem("users", encryptData(users));
+    return users;
   }
+  return JSON.parse(localStorage.getItem("users"));
 };
 
 export const validateUser = (email, password) => {
-  const encryptedUsers = localStorage.getItem("users");
-  if (!encryptedUsers) {
-    initializeUsers(); // Eğer users yoksa initialize et
-    return validateUser(email, password); // Recursive olarak tekrar kontrol et
-  }
+  const users = localStorage.getItem("users")
+    ? JSON.parse(localStorage.getItem("users"))
+    : initializeUsers();
 
-  const users = decryptData(encryptedUsers);
-  return users.find(
+  const foundUser = users.find(
     (user) => user.email === email && user.password === password
   );
+
+  if (foundUser) {
+    localStorage.setItem("isAuthenticated", "true");
+    localStorage.setItem("currentUser", JSON.stringify(foundUser));
+    return foundUser;
+  }
+  return null;
 };
 
 export const isAuthenticated = () => {
   return localStorage.getItem("isAuthenticated") === "true";
+};
+
+export const getCurrentUser = () => {
+  const user = localStorage.getItem("currentUser");
+  return user ? JSON.parse(user) : null;
+};
+
+export const logout = () => {
+  localStorage.removeItem("isAuthenticated");
+  localStorage.removeItem("currentUser");
 };

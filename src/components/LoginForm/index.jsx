@@ -10,59 +10,43 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { validateUser } from "@/utils/authUtils";
 import toast from "react-hot-toast";
-import { initializeUsers, validateUser } from "@/utils/authUtils";
-
 const LoginForm = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    initializeUsers();
-  }, []);
-
-  useEffect(() => {
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("userInfo");
-  }, []);
+    const user = localStorage.getItem("isAuthenticated");
+    if (user) {
+      navigate("/");
+    }
+  }, [navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setIsLoading(true);
-
     try {
       const user = validateUser(formData.email, formData.password);
-      if (user) {
-        const userInfo = {
-          id: user.id,
-          email: user.email,
-        };
-        toast.success("Hoş geldiniz");
-        localStorage.setItem("userInfo", JSON.stringify(userInfo));
-        localStorage.setItem("isAuthenticated", "true");
-
-        navigate("/");
+      navigate("/");
+      toast.success("Hoşgeldiniz!");
+      if (!user) {
+        navigate("/login");
       } else {
-        toast.error("Email veya şifre hatalı!");
+        navigate("/");
       }
-    } catch (error) {
-      toast.error("Bir hata oluştu!");
-      console.error(error);
-    } finally {
-      setIsLoading(false);
+    } catch {
+      toast.error("bir şey hatalı");
     }
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
   return (
@@ -86,7 +70,6 @@ const LoginForm = () => {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                disabled={isLoading}
               />
             </div>
             <div className="space-y-2">
@@ -98,7 +81,6 @@ const LoginForm = () => {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                disabled={isLoading}
               />
             </div>
             <div className="flex items-center justify-between">
@@ -111,8 +93,8 @@ const LoginForm = () => {
                 <Label htmlFor="remember">Beni hatırla</Label>
               </div>
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Giriş yapılıyor..." : "Giriş Yap"}
+            <Button type="submit" className="w-full">
+              Giriş Yap
             </Button>
           </form>
           <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg text-sm">
