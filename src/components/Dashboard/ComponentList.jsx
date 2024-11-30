@@ -32,12 +32,38 @@ const componentList = [
   },
 ];
 
-const ComponentList = ({ onDragStart }) => {
+const ComponentList = ({ onDragStart, recentComponents }) => {
   const navigate = useNavigate();
+
   return (
     <div className="w-64 bg-white p-4 shadow-lg flex flex-col min-h-screen">
       <h2 className="text-lg font-semibold mb-4">Components</h2>
+
+      {recentComponents?.length > 0 && (
+        <div className="mb-6">
+          <h3 className="text-sm font-medium text-gray-500 mb-2">
+            Recently Used
+          </h3>
+          <div className="space-y-2">
+            {recentComponents.map((component) => (
+              <div
+                key={`recent-${component.id}`}
+                draggable={true}
+                onDragStart={(e) => onDragStart(e, component)}
+                className="flex items-center p-3 bg-gray-50 rounded-lg cursor-move hover:bg-gray-100 transition-colors"
+              >
+                {component.icon}
+                <span className="ml-2">{component.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="space-y-2 flex-grow">
+        <h3 className="text-sm font-medium text-gray-500 mb-2">
+          All Components
+        </h3>
         {componentList.map((component) => (
           <div
             key={component.id}
@@ -50,6 +76,7 @@ const ComponentList = ({ onDragStart }) => {
           </div>
         ))}
       </div>
+
       <Button
         onClick={() => {
           logout();
@@ -66,6 +93,7 @@ const ComponentList = ({ onDragStart }) => {
 
 ComponentList.propTypes = {
   onDragStart: PropTypes.func.isRequired,
+  recentComponents: PropTypes.array.isRequired,
 };
 
 export default ComponentList;
