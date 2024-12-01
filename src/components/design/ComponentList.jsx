@@ -1,12 +1,24 @@
-import { FaUpload, FaKeyboard, FaCheckSquare, FaImage } from "react-icons/fa";
+import {
+  FaUpload,
+  FaKeyboard,
+  FaCheckSquare,
+  FaImage,
+  FaTrash,
+} from "react-icons/fa";
 import { CiLogout } from "react-icons/ci";
 import PropTypes from "prop-types";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 import { logout } from "@/utils/authUtils";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { addFullTemplate, currentTemplateIndex } from "@/store/templateSlice";
+import {
+  addFullTemplate,
+  currentTemplateIndex,
+  deleteTemplate,
+} from "@/store/templateSlice";
+import { useToast } from "@/hooks/use-toast";
 
 const componentList = [
   {
@@ -38,52 +50,109 @@ const componentList = [
 const ComponentList = ({ onDragStart }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const savedTemplates = JSON.parse(localStorage.getItem("templateList")) || [];
+  const [templates, setTemplates] = useState([]);
+  const { toast } = useToast();
 
-  const handleTemplateSelect = (template, index) => {
-    dispatch(addFullTemplate(template));
-    dispatch(currentTemplateIndex(index));
+  useEffect(() => {
+    const loadTemplates = () => {
+      const savedTemplates =
+        JSON.parse(localStorage.getItem("templateList")) || [];
+      setTemplates(savedTemplates);
+    };
+    loadTemplates();
+  }, []);
+
+  const handleTemplate = (items, index) => {
+    try {
+      dispatch(addFullTemplate(items));
+      dispatch(currentTemplateIndex(index));
+      toast({
+        title: "Success",
+        description: "Template loaded successfully",
+      });
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to load template",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteTemplate = (index) => {
+    try {
+      const updatedTemplates = templates.filter((_, idx) => idx !== index);
+      localStorage.setItem("templateList", JSON.stringify(updatedTemplates));
+      setTemplates(updatedTemplates);
+      dispatch(deleteTemplate());
+      toast({
+        title: "Success",
+        description: "Template deleted successfully",
+      });
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to delete template",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleLogout = () => {
-    logout();
-    navigate("/login");
+    try {
+      logout();
+      navigate("/login");
+    } catch {
+      toast({
+        title: "Error",
+        description: "Logout failed",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
     <div className="w-64 bg-white p-4 shadow-lg flex flex-col h-full">
-      {/* Components Section */}
       <div className="flex-grow">
         <h2 className="text-lg font-semibold mb-4">Components</h2>
-        {componentList.map((component) => (
-          <div
-            key={component.id}
-            draggable={true}
-            onDragStart={(e) => onDragStart(e, component)}
-            className="flex items-center p-3 bg-gray-50 rounded-lg cursor-move hover:bg-gray-100 transition-colors"
-          >
-            {component.icon}
-            <span className="ml-2">{component.name}</span>
-          </div>
-        ))}
+        <div className="space-y-2">
+          {componentList.map((component) => (
+            <div
+              key={component.id}
+              draggable={true}
+              onDragStart={(e) => onDragStart(e, component)}
+              className="flex items-center p-3 bg-gray-50 rounded-lg cursor-move hover:bg-gray-100 transition-colors"
+            >
+              {component.icon}
+              <span className="ml-2">{component.name}</span>
+            </div>
+          ))}
+        </div>
       </div>
-      {savedTemplates.length > 0 && (
+      {templates.length > 0 && (
         <div className="mt-6">
           <h3 className="text-sm font-medium text-gray-500 mb-2">
             Saved Templates
           </h3>
           <div className="space-y-2 max-h-48 overflow-y-auto">
-            {savedTemplates.map((template, index) => (
-              <Card
-                key={index}
-                className="p-2 hover:bg-gray-50 cursor-pointer"
-                onClick={() => handleTemplateSelect(template, index)}
-              >
+            {templates.map((template, index) => (
+              <Card key={index} className="p-2">
                 <div className="flex items-center justify-between">
-                  <span>Template {index + 1}</span>
-                  <span className="text-xs text-gray-500">
-                    {template.length} items
-                  </span>
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleTemplate(template, index)}
+                    className="flex-1 text-left"
+                  >
+                    Template {index + 1}
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleDeleteTemplate(index)}
+                    className="ml-2"
+                  >
+                    <FaTrash size={16} />
+                  </Button>
                 </div>
               </Card>
             ))}

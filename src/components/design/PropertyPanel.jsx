@@ -6,7 +6,7 @@ import { useState, useRef } from "react";
 import PropTypes from "prop-types";
 import ColorPicker from "../ColorPicker";
 
-const PropertyPanel = ({ selectedElement, onUpdateElement }) => {
+const PropertyPanel = ({ selectedElement, onUpdateElement, onDelete }) => {
   const fileInputRef = useRef(null);
   const [uploadedImage, setUploadedImage] = useState(null);
 
@@ -193,6 +193,13 @@ const PropertyPanel = ({ selectedElement, onUpdateElement }) => {
   return (
     <div className="w-64 bg-white p-4 shadow-lg">
       <h2 className="text-lg font-semibold mb-4">Properties</h2>
+      <Button
+        variant="destructive"
+        size="sm"
+        onClick={() => onDelete(selectedElement.instanceId)}
+      >
+        Delete
+      </Button>
       {renderProperties()}
     </div>
   );
@@ -221,6 +228,7 @@ PropertyPanel.propTypes = {
     }),
   }),
   onUpdateElement: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
 };
 
 PropertyPanel.defaultProps = {

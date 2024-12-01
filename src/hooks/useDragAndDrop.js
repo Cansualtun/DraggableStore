@@ -1,8 +1,8 @@
-// src/hooks/useDragAndDrop.js
 import { useState, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { updateTemplate } from "@/store/templateSlice";
 import { nanoid } from "nanoid";
+import { deleteElement } from "@/store/templateSlice";
 
 export const useDragAndDrop = () => {
   const [designElements, setDesignElements] = useState([]);
@@ -78,12 +78,38 @@ export const useDragAndDrop = () => {
     [dispatch]
   );
 
+  const handleDeleteElement = useCallback(
+    (elementId) => {
+      // Redux'tan sil
+      dispatch(deleteElement(elementId));
+
+      // Local state'den sil
+      setDesignElements((prev) =>
+        prev.filter((el) => el.instanceId !== elementId)
+      );
+
+      // Seçili element siliniyorsa seçimi kaldır
+      if (selectedElement?.instanceId === elementId) {
+        setSelectedElement(null);
+      }
+
+      // LocalStorage'ı güncelle
+      const currentTemplates =
+        JSON.parse(localStorage.getItem("templateList")) || [];
+      const updatedTemplates = currentTemplates.map((template) =>
+        template.filter((item) => item.instanceId !== elementId)
+      );
+      localStorage.setItem("templateList", JSON.stringify(updatedTemplates));
+    },
+    [dispatch, selectedElement]
+  );
   return {
     designElements,
     selectedElement,
     isDragging,
     draggedElement,
     startPosition,
+    handleDeleteElement,
     setIsDragging,
     setDraggedElement,
     handleDragStart,

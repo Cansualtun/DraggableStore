@@ -28,6 +28,15 @@ export const templateSlice = createSlice({
       state.index = null;
       state.templates = [];
     },
+    deleteElement: (state, action) => {
+      state.templates = state.templates.filter(
+        (item) => item.instanceId !== action.payload
+      );
+    },
+    deleteTemplate: (state) => {
+      state.templates = [];
+      state.index = null;
+    },
   },
 });
 
@@ -37,6 +46,8 @@ export const {
   addFullTemplate,
   currentTemplateIndex,
   clearCurrentTemplateIndex,
+  deleteElement,
+  deleteTemplate,
 } = templateSlice.actions;
 
 export default templateSlice.reducer;
