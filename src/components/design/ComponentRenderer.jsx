@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { UploadComponent } from "./components/UploadComponent";
 import { InputComponent } from "./components/InputComponent";
-import { CheckboxComponent } from "./components/CheckboxComponent";
+import { CheckboxComponent } from "./components/CheckBoxComponent";
 import { ImageComponent } from "./components/ImageComponent";
 
 export const ComponentRenderer = ({ element, isSelected, onSelect }) => {
