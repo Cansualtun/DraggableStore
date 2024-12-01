@@ -131,8 +131,9 @@ const DashboardPage = () => {
             selectedElement={selectedElement}
             onElementSelect={handleElementMouseDown}
             onDrop={handleDrop}
-            onDragLeave={(e) => e.preventDefault()}
             onDragOver={(e) => e.preventDefault()}
+            onDragLeave={(e) => e.preventDefault()}
+            onUpdateElement={handleUpdateElement}
           />
         </div>
         <PropertyPanel

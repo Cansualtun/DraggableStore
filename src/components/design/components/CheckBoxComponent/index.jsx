@@ -1,6 +1,5 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import PropTypes from "prop-types";
 
 export const CheckboxComponent = ({ styles, properties }) => {
   return (
@@ -9,17 +8,4 @@ export const CheckboxComponent = ({ styles, properties }) => {
       <Label>{properties?.label || "Checkbox Label"}</Label>
     </div>
   );
-};
-
-CheckboxComponent.propTypes = {
-  styles: PropTypes.shape({
-    width: PropTypes.string,
-    height: PropTypes.string,
-    borderStyle: PropTypes.string,
-    borderColor: PropTypes.string,
-  }).isRequired,
-  properties: PropTypes.shape({
-    disabled: PropTypes.bool,
-    label: PropTypes.string,
-  }).isRequired,
 };

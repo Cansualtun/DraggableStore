@@ -1,6 +1,5 @@
 import { FaUpload } from "react-icons/fa";
 import { Card, CardContent } from "@/components/ui/card";
-import PropTypes from "prop-types";
 
 export const UploadComponent = ({ styles, properties }) => {
   return (
@@ -25,17 +24,4 @@ export const UploadComponent = ({ styles, properties }) => {
       </CardContent>
     </Card>
   );
-};
-
-UploadComponent.propTypes = {
-  styles: PropTypes.shape({
-    width: PropTypes.string,
-    height: PropTypes.string,
-    backgroundColor: PropTypes.string,
-    borderStyle: PropTypes.string,
-    borderColor: PropTypes.string,
-  }).isRequired,
-  properties: PropTypes.shape({
-    imageUrl: PropTypes.string,
-  }).isRequired,
 };

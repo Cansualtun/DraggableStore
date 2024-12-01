@@ -1,5 +1,4 @@
-import { useRef } from "react";
-import PropTypes from "prop-types";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ComponentRenderer } from "./ComponentRenderer";
 
@@ -10,9 +9,12 @@ export const DesignArea = ({
   onDrop,
   onDragOver,
   onDragLeave,
+  onUpdateElement,
 }) => {
   const designAreaRef = useRef(null);
   const { toast } = useToast();
+  const [isDragging, setIsDragging] = useState(false);
+  const [startPosition, setStartPosition] = useState({ x: 0, y: 0 });
 
   const checkBoundaries = (newX, newY, elementRect, designRect) => {
     const maxX = designRect.width - elementRect.width;
@@ -32,6 +34,65 @@ export const DesignArea = ({
     return { x: newX, y: newY };
   };
 
+  const handleMouseDown = useCallback(
+    (e, element) => {
+      if (e.button !== 0) return;
+      e.preventDefault();
+      setIsDragging(true);
+      onElementSelect(e, element);
+
+      const rect = designAreaRef.current.getBoundingClientRect();
+      setStartPosition({
+        x: e.clientX - rect.left - element.position.x,
+        y: e.clientY - rect.top - element.position.y,
+      });
+    },
+    [onElementSelect]
+  );
+
+  const handleMouseMove = useCallback(
+    (e) => {
+      if (!isDragging || !selectedElement) return;
+
+      const designRect = designAreaRef.current.getBoundingClientRect();
+      const elementRect = document
+        .getElementById(selectedElement.instanceId)
+        .getBoundingClientRect();
+
+      const newX = e.clientX - designRect.left - startPosition.x;
+      const newY = e.clientY - designRect.top - startPosition.y;
+
+      const validPosition = checkBoundaries(
+        newX,
+        newY,
+        elementRect,
+        designRect
+      );
+
+      onUpdateElement({
+        ...selectedElement,
+        position: validPosition,
+      });
+    },
+    [isDragging, selectedElement, startPosition, onUpdateElement]
+  );
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mouseup", handleMouseUp);
+    }
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isDragging, handleMouseMove, handleMouseUp]);
+
   return (
     <div
       ref={designAreaRef}
@@ -45,62 +106,14 @@ export const DesignArea = ({
           key={element.instanceId}
           element={element}
           isSelected={selectedElement?.instanceId === element.instanceId}
-          onSelect={onElementSelect}
-          checkBoundaries={(newX, newY, elementRect) =>
-            checkBoundaries(
-              newX,
-              newY,
-              elementRect,
-              designAreaRef.current.getBoundingClientRect()
-            )
+          onSelect={handleMouseDown}
+          isDragging={
+            isDragging && selectedElement?.instanceId === element.instanceId
           }
         />
       ))}
     </div>
   );
-};
-
-DesignArea.propTypes = {
-  design: PropTypes.arrayOf(
-    PropTypes.shape({
-      instanceId: PropTypes.string.isRequired,
-      type: PropTypes.oneOf(["input", "upload", "checkbox", "image"])
-        .isRequired,
-      position: PropTypes.shape({
-        x: PropTypes.number.isRequired,
-        y: PropTypes.number.isRequired,
-      }).isRequired,
-      style: PropTypes.shape({
-        width: PropTypes.string,
-        height: PropTypes.string,
-        backgroundColor: PropTypes.string,
-        borderStyle: PropTypes.string,
-        borderColor: PropTypes.string,
-      }),
-      properties: PropTypes.shape({
-        placeholder: PropTypes.string,
-        disabled: PropTypes.bool,
-        label: PropTypes.string,
-        imageUrl: PropTypes.string,
-      }),
-    })
-  ).isRequired,
-  selectedElement: PropTypes.shape({
-    instanceId: PropTypes.string.isRequired,
-    type: PropTypes.oneOf(["input", "upload", "checkbox", "image"]).isRequired,
-    position: PropTypes.shape({
-      x: PropTypes.number.isRequired,
-      y: PropTypes.number.isRequired,
-    }).isRequired,
-  }),
-  onElementSelect: PropTypes.func.isRequired,
-  onDrop: PropTypes.func.isRequired,
-  onDragOver: PropTypes.func.isRequired,
-  onDragLeave: PropTypes.func.isRequired,
-};
-
-DesignArea.defaultProps = {
-  selectedElement: null,
 };
 
 export default DesignArea;

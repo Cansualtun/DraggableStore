@@ -6,7 +6,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import PropTypes from "prop-types";
 
 const ColorPicker = ({ value, onChange }) => {
   const [color, setColor] = useState(value || "#ffffff");
@@ -37,15 +36,6 @@ const ColorPicker = ({ value, onChange }) => {
       </PopoverContent>
     </Popover>
   );
-};
-
-ColorPicker.propTypes = {
-  value: PropTypes.string,
-  onChange: PropTypes.func.isRequired,
-};
-
-ColorPicker.defaultProps = {
-  value: "#ffffff",
 };
 
 export default ColorPicker;

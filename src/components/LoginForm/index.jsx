@@ -107,7 +107,6 @@ const LoginForm = () => {
             <p className="font-semibold mb-2">Test Kullanıcıları:</p>
             <ul className="space-y-1 text-gray-600 dark:text-gray-300">
               <li>Email: admin@example.com / Şifre: ******</li>
-              <li>Email: user@example.com / Şifre: ******</li>
             </ul>
           </div>
         </CardContent>

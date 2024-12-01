@@ -3,7 +3,6 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState, useRef } from "react";
-import PropTypes from "prop-types";
 import ColorPicker from "../ColorPicker";
 
 const PropertyPanel = ({ selectedElement, onUpdateElement, onDelete }) => {
@@ -218,7 +217,6 @@ const PropertyPanel = ({ selectedElement, onUpdateElement, onDelete }) => {
 
   const renderCheckboxProperties = () => (
     <div className="space-y-4">
-      {renderCommonProperties()}
       <div className="flex items-center space-x-2">
         <Checkbox
           checked={selectedElement.properties?.disabled || false}
@@ -268,37 +266,6 @@ const PropertyPanel = ({ selectedElement, onUpdateElement, onDelete }) => {
       </Button>
     </div>
   );
-};
-
-PropertyPanel.propTypes = {
-  selectedElement: PropTypes.shape({
-    instanceId: PropTypes.string,
-    type: PropTypes.oneOf(["input", "upload", "checkbox", "image"]),
-    position: PropTypes.shape({
-      x: PropTypes.number,
-      y: PropTypes.number,
-    }),
-    style: PropTypes.shape({
-      width: PropTypes.string,
-      height: PropTypes.string,
-      backgroundColor: PropTypes.string,
-      borderStyle: PropTypes.string,
-      borderColor: PropTypes.string,
-      color: PropTypes.string,
-    }),
-    properties: PropTypes.shape({
-      placeholder: PropTypes.string,
-      disabled: PropTypes.bool,
-      label: PropTypes.string,
-      imageUrl: PropTypes.string,
-    }),
-  }),
-  onUpdateElement: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
-};
-
-PropertyPanel.defaultProps = {
-  selectedElement: null,
 };
 
 export default PropertyPanel;

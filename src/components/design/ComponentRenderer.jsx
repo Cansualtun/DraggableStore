@@ -1,11 +1,9 @@
-import PropTypes from "prop-types";
 import { UploadComponent } from "./components/UploadComponent";
 import { InputComponent } from "./components/InputComponent";
-import { CheckboxComponent } from "./components/CheckBoxComponent";
-import { ImageComponent } from "./components/ImageComponent";
+import { CheckboxComponent } from "./components/CheckboxComponent";
 import { ButtonComponent } from "./components/ButtonComponent";
 
-export const ComponentRenderer = ({ element, isSelected, onSelect }) => {
+export const ComponentRenderer = ({ element, onSelect, isDragging }) => {
   const renderComponent = () => {
     const commonStyles = {
       width: element.style?.width || "200px",
@@ -47,14 +45,6 @@ export const ComponentRenderer = ({ element, isSelected, onSelect }) => {
             properties={element.properties}
           />
         );
-      case "image":
-        return (
-          <ImageComponent
-            styles={commonStyles}
-            properties={element.properties}
-          />
-        );
-
       default:
         return <div>Unsupported Component</div>;
     }
@@ -62,43 +52,17 @@ export const ComponentRenderer = ({ element, isSelected, onSelect }) => {
 
   return (
     <div
-      className={`absolute cursor-move select-none ${isSelected ? "" : ""}`}
+      id={element.instanceId}
+      className={"absolute cursor-move select-none"}
       style={{
         left: `${element.position.x}px`,
         top: `${element.position.y}px`,
         touchAction: "none",
+        cursor: isDragging ? "grabbing" : "grab",
       }}
       onMouseDown={(e) => onSelect(e, element)}
     >
-      {renderComponent(element.type, element.style, element.properties)}
+      {renderComponent()}
     </div>
   );
-};
-
-ComponentRenderer.propTypes = {
-  element: PropTypes.shape({
-    instanceId: PropTypes.string.isRequired,
-    type: PropTypes.oneOf(["input", "upload", "checkbox", "image"]).isRequired,
-    position: PropTypes.shape({
-      x: PropTypes.number.isRequired,
-      y: PropTypes.number.isRequired,
-    }).isRequired,
-    style: PropTypes.shape({
-      width: PropTypes.string,
-      height: PropTypes.string,
-      backgroundColor: PropTypes.string,
-      borderStyle: PropTypes.string,
-      borderColor: PropTypes.string,
-      color: PropTypes.string,
-    }),
-    properties: PropTypes.shape({
-      placeholder: PropTypes.string,
-      disabled: PropTypes.bool,
-      label: PropTypes.string,
-      imageUrl: PropTypes.string,
-    }),
-  }).isRequired,
-  isSelected: PropTypes.bool.isRequired,
-  onSelect: PropTypes.func.isRequired,
-  checkBoundaries: PropTypes.func.isRequired,
 };

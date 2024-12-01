@@ -1,12 +1,5 @@
-import {
-  FaUpload,
-  FaKeyboard,
-  FaCheckSquare,
-  FaImage,
-  FaTrash,
-} from "react-icons/fa";
+import { FaUpload, FaKeyboard, FaCheckSquare, FaTrash } from "react-icons/fa";
 import { CiLogout } from "react-icons/ci";
-import PropTypes from "prop-types";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 import { logout } from "@/utils/authUtils";
@@ -32,12 +25,6 @@ const componentList = [
     name: "Checkbox",
     icon: <FaCheckSquare size={24} />,
     type: "checkbox",
-  },
-  {
-    id: "image",
-    name: "Image",
-    icon: <FaImage size={24} />,
-    type: "image",
   },
   {
     id: "button",
@@ -148,13 +135,6 @@ const ComponentList = ({
       </Button>
     </div>
   );
-};
-
-ComponentList.propTypes = {
-  onDragStart: PropTypes.func.isRequired,
-  savedTemplates: PropTypes.array,
-  setSavedTemplates: PropTypes.func.isRequired,
-  onLoadTemplate: PropTypes.func.isRequired,
 };
 
 export default ComponentList;
