@@ -1,7 +1,7 @@
 import { UploadComponent } from "./components/UploadComponent";
 import { InputComponent } from "./components/InputComponent";
-import { CheckboxComponent } from "./components/CheckboxComponent";
 import { ButtonComponent } from "./components/ButtonComponent";
+import { CheckboxComponent } from "./components/CheckBoxComponent";
 
 export const ComponentRenderer = ({ element, onSelect, isDragging }) => {
   const renderComponent = () => {
