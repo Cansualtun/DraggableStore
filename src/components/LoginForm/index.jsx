@@ -33,18 +33,27 @@ const LoginForm = () => {
     e.preventDefault();
     try {
       const user = validateUser(formData.email, formData.password);
-      toast({
-        position: "top-center",
-        description: "Hoşgeldiniz!",
-      });
-      navigate("/");
-      if (!user) {
-        navigate("/login");
-      } else {
+
+      if (user) {
+        toast({
+          title: "Başarılı",
+          description: "Hoşgeldiniz!",
+          variant: "success",
+        });
         navigate("/");
+      } else {
+        toast({
+          title: "Hata",
+          description: "Email veya şifre hatalı!",
+          variant: "destructive",
+        });
       }
     } catch {
-      toast.error("bir şey hatalı");
+      toast({
+        title: "Hata",
+        description: "Bir hata oluştu. Lütfen tekrar deneyin.",
+        variant: "destructive",
+      });
     }
   };
 

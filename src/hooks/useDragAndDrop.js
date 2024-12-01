@@ -20,7 +20,10 @@ export const useDragAndDrop = () => {
       position: { x: 0, y: 0 },
       style: {
         width: component.type === "input" ? "200px" : "200px",
-        height: component.type === "input" ? "40px" : "150px",
+        height:
+          component.type === "input" || component.type === "button"
+            ? "40px"
+            : "150px",
         backgroundColor: "#ffffff",
         borderStyle: "solid",
         borderColor: "#000000",
