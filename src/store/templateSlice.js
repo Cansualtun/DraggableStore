@@ -21,6 +21,9 @@ export const templateSlice = createSlice({
     addFullTemplate: (state, action) => {
       state.templates = action.payload;
     },
+    addRecentTemplate: (state, action) => {
+      state.recentTemplates = action.payload;
+    },
     currentTemplateIndex: (state, action) => {
       state.index = action.payload;
     },
@@ -48,6 +51,7 @@ export const {
   clearCurrentTemplateIndex,
   deleteElement,
   deleteTemplate,
+  addRecentTemplate,
 } = templateSlice.actions;
 
 export default templateSlice.reducer;

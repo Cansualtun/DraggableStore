@@ -9,6 +9,7 @@ import PropertyPanel from "@/components/design/PropertyPanel";
 import {
   clearCurrentTemplateIndex,
   addFullTemplate,
+  currentTemplateIndex as setCurrentTemplateIndex,
 } from "@/store/templateSlice";
 import { useToast } from "@/hooks/use-toast";
 
@@ -20,80 +21,106 @@ const DashboardPage = () => {
     handleDrop,
     handleUpdateElement,
     handleElementMouseDown,
+    handleDeleteElement,
     setDesignElements,
   } = useDragAndDrop();
 
   const [isNewTemplate, setIsNewTemplate] = useState(false);
-  const templates = useSelector((state) => state.template?.templates);
-  const currentTemplateIndex = useSelector((state) => state.template.index);
+  const [savedTemplates, setSavedTemplates] = useState([]);
+  const currentTemplateIndex = useSelector((state) => state.template?.index);
   const dispatch = useDispatch();
   const { toast } = useToast();
 
   useEffect(() => {
-    setDesignElements(templates);
-  }, [templates, setDesignElements]);
+    const templates = JSON.parse(localStorage.getItem("templateList")) || [];
+    setSavedTemplates(templates);
+  }, []);
+
+  const handleLoadTemplate = (template, index) => {
+    try {
+      setDesignElements(template);
+      dispatch(addFullTemplate(template));
+      dispatch(setCurrentTemplateIndex(index));
+      setIsNewTemplate(false);
+
+      toast({
+        title: "Success",
+        description: "Template loaded successfully",
+      });
+    } catch (error) {
+      console.error("Template load error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load template",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleSave = () => {
     try {
+      const newTemplate = [...designElements];
+      let updatedTemplates;
+
       if (currentTemplateIndex !== null && !isNewTemplate) {
-        const list = JSON.parse(localStorage.getItem("templateList")) || [];
-        const filteredList = list.filter(
-          (_, index) => index !== currentTemplateIndex
-        );
-        const parsedData = [...filteredList, designElements];
-        localStorage.setItem("templateList", JSON.stringify(parsedData));
-        dispatch(addFullTemplate(designElements));
-        toast({
-          title: "Başarılı",
-          description: "Template güncellendi",
-        });
+        updatedTemplates = [...savedTemplates];
+        updatedTemplates[currentTemplateIndex] = newTemplate;
       } else {
-        const currentTemplate =
-          JSON.parse(localStorage.getItem("templateList")) ?? [];
-        const parsedData = [...currentTemplate, designElements];
-        localStorage.setItem("templateList", JSON.stringify(parsedData));
-        dispatch(addFullTemplate(designElements));
-        toast({
-          title: "Başarılı",
-          description: "Yeni template kaydedildi",
-        });
+        updatedTemplates = [...savedTemplates, newTemplate];
       }
+      localStorage.setItem("templateList", JSON.stringify(updatedTemplates));
+      setSavedTemplates(updatedTemplates);
+      dispatch(addFullTemplate(newTemplate));
+
+      toast({
+        title: "Success",
+        description: isNewTemplate
+          ? "New template saved successfully"
+          : "Template updated successfully",
+      });
+      setIsNewTemplate(false);
     } catch (error) {
       console.error("Save error:", error);
       toast({
-        title: "Hata",
-        description: "Template kaydedilirken bir hata oluştu",
+        title: "Error",
+        description: "Failed to save template",
         variant: "destructive",
       });
     }
   };
 
   const clearDesign = () => {
-    dispatch(clearCurrentTemplateIndex());
     setDesignElements([]);
+    dispatch(clearCurrentTemplateIndex());
+    setIsNewTemplate(true);
     toast({
-      title: "Başarılı",
-      description: "Tasarım temizlendi",
+      title: "Success",
+      description: "Design cleared successfully",
     });
   };
 
   return (
     <div className="flex flex-col h-screen">
       <div className="flex gap-4 p-4 bg-white border-b">
-        <Button onClick={handleSave}>Kaydet</Button>
+        <Button onClick={handleSave}>Save</Button>
         <div className="flex items-center gap-2">
           <Checkbox
             checked={isNewTemplate}
             onCheckedChange={setIsNewTemplate}
             id="isNewTemplate"
           />
-          <label htmlFor="isNewTemplate">Yeni Bir Template Olarak Kaydet</label>
+          <label htmlFor="isNewTemplate">Save as New Template</label>
         </div>
         <Button onClick={clearDesign}>Clear Design</Button>
       </div>
 
       <div className="flex flex-1 bg-gray-100">
-        <ComponentList onDragStart={handleDragStart} />
+        <ComponentList
+          onDragStart={handleDragStart}
+          savedTemplates={savedTemplates}
+          setSavedTemplates={setSavedTemplates}
+          onLoadTemplate={handleLoadTemplate}
+        />
         <div className="flex-1 p-8">
           <DesignArea
             design={designElements}
@@ -107,6 +134,7 @@ const DashboardPage = () => {
         <PropertyPanel
           selectedElement={selectedElement}
           onUpdateElement={handleUpdateElement}
+          onDelete={handleDeleteElement}
         />
       </div>
     </div>

@@ -11,13 +11,6 @@ import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 import { logout } from "@/utils/authUtils";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import {
-  addFullTemplate,
-  currentTemplateIndex,
-  deleteTemplate,
-} from "@/store/templateSlice";
 import { useToast } from "@/hooks/use-toast";
 
 const componentList = [
@@ -47,44 +40,21 @@ const componentList = [
   },
 ];
 
-const ComponentList = ({ onDragStart }) => {
+const ComponentList = ({
+  onDragStart,
+  savedTemplates,
+  setSavedTemplates,
+  onLoadTemplate,
+}) => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const [templates, setTemplates] = useState([]);
   const { toast } = useToast();
-
-  useEffect(() => {
-    const loadTemplates = () => {
-      const savedTemplates =
-        JSON.parse(localStorage.getItem("templateList")) || [];
-      setTemplates(savedTemplates);
-    };
-    loadTemplates();
-  }, []);
-
-  const handleTemplate = (items, index) => {
-    try {
-      dispatch(addFullTemplate(items));
-      dispatch(currentTemplateIndex(index));
-      toast({
-        title: "Success",
-        description: "Template loaded successfully",
-      });
-    } catch {
-      toast({
-        title: "Error",
-        description: "Failed to load template",
-        variant: "destructive",
-      });
-    }
-  };
 
   const handleDeleteTemplate = (index) => {
     try {
-      const updatedTemplates = templates.filter((_, idx) => idx !== index);
+      const updatedTemplates = savedTemplates.filter((_, idx) => idx !== index);
       localStorage.setItem("templateList", JSON.stringify(updatedTemplates));
-      setTemplates(updatedTemplates);
-      dispatch(deleteTemplate());
+      setSavedTemplates(updatedTemplates);
+
       toast({
         title: "Success",
         description: "Template deleted successfully",
@@ -128,37 +98,39 @@ const ComponentList = ({ onDragStart }) => {
             </div>
           ))}
         </div>
-      </div>
-      {templates.length > 0 && (
-        <div className="mt-6">
-          <h3 className="text-sm font-medium text-gray-500 mb-2">
-            Saved Templates
-          </h3>
-          <div className="space-y-2 max-h-48 overflow-y-auto">
-            {templates.map((template, index) => (
-              <Card key={index} className="p-2">
-                <div className="flex items-center justify-between">
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleTemplate(template, index)}
-                    className="flex-1 text-left"
-                  >
-                    Template {index + 1}
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleDeleteTemplate(index)}
-                    className="ml-2"
-                  >
-                    <FaTrash size={16} />
-                  </Button>
-                </div>
-              </Card>
-            ))}
+
+        {savedTemplates?.length > 0 && (
+          <div className="mt-6">
+            <h3 className="text-sm font-medium text-gray-500 mb-2">
+              Saved Templates
+            </h3>
+            <div className="space-y-2 max-h-48 overflow-y-auto">
+              {savedTemplates.map((template, index) => (
+                <Card key={index} className="p-2">
+                  <div className="flex items-center justify-between">
+                    <Button
+                      variant="ghost"
+                      onClick={() => onLoadTemplate(template, index)}
+                      className="flex-1 text-left"
+                    >
+                      Template {index + 1}
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDeleteTemplate(index)}
+                      className="ml-2"
+                    >
+                      <FaTrash size={16} />
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
+
       <Button
         onClick={handleLogout}
         className="w-full mt-4 flex items-center justify-center gap-2"
@@ -173,6 +145,9 @@ const ComponentList = ({ onDragStart }) => {
 
 ComponentList.propTypes = {
   onDragStart: PropTypes.func.isRequired,
+  savedTemplates: PropTypes.array,
+  setSavedTemplates: PropTypes.func.isRequired,
+  onLoadTemplate: PropTypes.func.isRequired,
 };
 
 export default ComponentList;

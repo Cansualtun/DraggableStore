@@ -8,13 +8,11 @@ export const DesignArea = ({
   selectedElement,
   onElementSelect,
   onDrop,
+  onDragOver,
   onDragLeave,
 }) => {
   const designAreaRef = useRef(null);
   const { toast } = useToast();
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
 
   const checkBoundaries = (newX, newY, elementRect, designRect) => {
     const maxX = designRect.width - elementRect.width;
@@ -39,7 +37,7 @@ export const DesignArea = ({
       ref={designAreaRef}
       className="bg-white h-full rounded-lg shadow-lg relative overflow-hidden"
       onDrop={onDrop}
-      onDragOver={handleDragOver}
+      onDragOver={onDragOver}
       onDragLeave={onDragLeave}
     >
       {design.map((element) => (

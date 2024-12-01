@@ -52,9 +52,7 @@ export const ComponentRenderer = ({ element, isSelected, onSelect }) => {
 
   return (
     <div
-      className={`absolute cursor-move select-none ${
-        isSelected ? "ring-2 ring-blue-500" : ""
-      }`}
+      className={`absolute cursor-move select-none ${isSelected ? "" : ""}`}
       style={{
         left: `${element.position.x}px`,
         top: `${element.position.y}px`,

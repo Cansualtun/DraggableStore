@@ -80,15 +80,10 @@ export const useDragAndDrop = () => {
 
   const handleDeleteElement = useCallback(
     (elementId) => {
-      // Redux'tan sil
       dispatch(deleteElement(elementId));
-
-      // Local state'den sil
       setDesignElements((prev) =>
         prev.filter((el) => el.instanceId !== elementId)
       );
-
-      // Seçili element siliniyorsa seçimi kaldır
       if (selectedElement?.instanceId === elementId) {
         setSelectedElement(null);
       }
