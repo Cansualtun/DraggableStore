@@ -70,13 +70,6 @@ const PropertyPanel = ({ selectedElement, onUpdateElement, onDelete }) => {
           min={50}
         />
       </div>
-      <div>
-        <Label>Background Color</Label>
-        <ColorPicker
-          value={selectedElement.style?.backgroundColor || "#ffffff"}
-          onChange={(color) => handleStyleChange("backgroundColor", color)}
-        />
-      </div>
     </div>
   );
 
@@ -88,6 +81,13 @@ const PropertyPanel = ({ selectedElement, onUpdateElement, onDelete }) => {
         <Input
           value={selectedElement.properties?.placeholder || ""}
           onChange={(e) => handlePropertyChange("placeholder", e.target.value)}
+        />
+      </div>
+      <div>
+        <Label>Background Color</Label>
+        <ColorPicker
+          value={selectedElement.style?.backgroundColor || "#ffffff"}
+          onChange={(color) => handleStyleChange("backgroundColor", color)}
         />
       </div>
       <div>
@@ -112,6 +112,60 @@ const PropertyPanel = ({ selectedElement, onUpdateElement, onDelete }) => {
     </div>
   );
 
+  const renderButtonProperties = () => (
+    <div className="space-y-4">
+      {renderCommonProperties()}
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          checked={selectedElement.properties?.disabled || false}
+          onCheckedChange={(checked) =>
+            handlePropertyChange("disabled", checked)
+          }
+        />
+        <Label>Disabled</Label>
+      </div>
+      <div>
+        <Label>Label</Label>
+        <Input
+          value={selectedElement.properties?.label || ""}
+          onChange={(e) => handlePropertyChange("label", e.target.value)}
+        />
+      </div>
+      <div>
+        <Label>Background Color</Label>
+        <ColorPicker
+          value={selectedElement.style?.backgroundColor || "#000000"}
+          onChange={(color) => handleStyleChange("backgroundColor", color)}
+        />
+      </div>
+      <div>
+        <Label>Text Color</Label>
+        <ColorPicker
+          value={selectedElement.style?.color || "#000000"}
+          onChange={(color) => handleStyleChange("color", color)}
+        />
+      </div>
+      <div>
+        <Label>Border Style</Label>
+        <select
+          className="w-full border rounded-md p-2"
+          value={selectedElement.style?.borderStyle || "solid"}
+          onChange={(e) => handleStyleChange("borderStyle", e.target.value)}
+        >
+          <option value="solid">Solid</option>
+          <option value="dashed">Dashed</option>
+          <option value="dotted">Dotted</option>
+        </select>
+      </div>
+      <div>
+        <Label>Border Color</Label>
+        <ColorPicker
+          value={selectedElement.style?.borderColor || "#000000"}
+          onChange={(color) => handleStyleChange("borderColor", color)}
+        />
+      </div>
+    </div>
+  );
   const renderUploadProperties = () => (
     <div className="space-y-4">
       {renderCommonProperties()}
@@ -130,6 +184,13 @@ const PropertyPanel = ({ selectedElement, onUpdateElement, onDelete }) => {
         >
           Choose Image
         </Button>
+        <div>
+          <Label>Background Color</Label>
+          <ColorPicker
+            value={selectedElement.style?.backgroundColor || "#ffffff"}
+            onChange={(color) => handleStyleChange("backgroundColor", color)}
+          />
+        </div>
       </div>
       {uploadedImage && (
         <div>
@@ -185,6 +246,8 @@ const PropertyPanel = ({ selectedElement, onUpdateElement, onDelete }) => {
         return renderUploadProperties();
       case "checkbox":
         return renderCheckboxProperties();
+      case "button":
+        return renderButtonProperties();
       default:
         return renderCommonProperties();
     }
@@ -221,6 +284,7 @@ PropertyPanel.propTypes = {
       backgroundColor: PropTypes.string,
       borderStyle: PropTypes.string,
       borderColor: PropTypes.string,
+      color: PropTypes.string,
     }),
     properties: PropTypes.shape({
       placeholder: PropTypes.string,

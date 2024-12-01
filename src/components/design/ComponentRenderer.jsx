@@ -3,6 +3,7 @@ import { UploadComponent } from "./components/UploadComponent";
 import { InputComponent } from "./components/InputComponent";
 import { CheckboxComponent } from "./components/CheckBoxComponent";
 import { ImageComponent } from "./components/ImageComponent";
+import { ButtonComponent } from "./components/ButtonComponent";
 
 export const ComponentRenderer = ({ element, isSelected, onSelect }) => {
   const renderComponent = () => {
@@ -14,6 +15,7 @@ export const ComponentRenderer = ({ element, isSelected, onSelect }) => {
       backgroundColor: element.style?.backgroundColor,
       borderStyle: element.style?.borderStyle,
       borderColor: element.style?.borderColor,
+      color: element.style?.color,
     };
 
     switch (element.type) {
@@ -38,6 +40,13 @@ export const ComponentRenderer = ({ element, isSelected, onSelect }) => {
             properties={element.properties}
           />
         );
+      case "button":
+        return (
+          <ButtonComponent
+            styles={commonStyles}
+            properties={element.properties}
+          />
+        );
       case "image":
         return (
           <ImageComponent
@@ -45,6 +54,7 @@ export const ComponentRenderer = ({ element, isSelected, onSelect }) => {
             properties={element.properties}
           />
         );
+
       default:
         return <div>Unsupported Component</div>;
     }
@@ -79,6 +89,7 @@ ComponentRenderer.propTypes = {
       backgroundColor: PropTypes.string,
       borderStyle: PropTypes.string,
       borderColor: PropTypes.string,
+      color: PropTypes.string,
     }),
     properties: PropTypes.shape({
       placeholder: PropTypes.string,

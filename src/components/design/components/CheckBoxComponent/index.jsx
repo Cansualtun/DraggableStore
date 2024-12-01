@@ -15,7 +15,6 @@ CheckboxComponent.propTypes = {
   styles: PropTypes.shape({
     width: PropTypes.string,
     height: PropTypes.string,
-    backgroundColor: PropTypes.string,
     borderStyle: PropTypes.string,
     borderColor: PropTypes.string,
   }).isRequired,
