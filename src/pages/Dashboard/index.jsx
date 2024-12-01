@@ -101,17 +101,21 @@ const DashboardPage = () => {
 
   return (
     <div className="flex flex-col h-screen">
-      <div className="flex gap-4 p-4 bg-white border-b">
-        <Button onClick={handleSave}>Save</Button>
-        <div className="flex items-center gap-2">
-          <Checkbox
-            checked={isNewTemplate}
-            onCheckedChange={setIsNewTemplate}
-            id="isNewTemplate"
-          />
-          <label htmlFor="isNewTemplate">Save as New Template</label>
+      <div className="flex justify-between p-4 bg-white border-b">
+        <div className="flex flex-row gap-2">
+          <Button onClick={handleSave}>Save</Button>
+          <div className="flex items-center gap-2">
+            <Checkbox
+              checked={isNewTemplate}
+              onCheckedChange={setIsNewTemplate}
+              id="isNewTemplate"
+            />
+            <label htmlFor="isNewTemplate">Save as New Template</label>
+          </div>
         </div>
-        <Button onClick={clearDesign}>Clear Design</Button>
+        <Button onClick={clearDesign} variant="destructive">
+          Clear Design
+        </Button>
       </div>
 
       <div className="flex flex-1 bg-gray-100">

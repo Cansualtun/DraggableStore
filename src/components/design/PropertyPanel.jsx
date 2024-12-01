@@ -191,16 +191,18 @@ const PropertyPanel = ({ selectedElement, onUpdateElement, onDelete }) => {
   };
 
   return (
-    <div className="w-64 bg-white p-4 shadow-lg">
-      <h2 className="text-lg font-semibold mb-4">Properties</h2>
+    <div className="w-64 bg-white p-4 shadow-lg h-full flex flex-col justify-between">
+      <div>
+        <h2 className="text-lg font-semibold mb-4">Properties</h2>
+        {renderProperties()}
+      </div>
       <Button
         variant="destructive"
         size="sm"
         onClick={() => onDelete(selectedElement.instanceId)}
       >
-        Delete
+        Delete Item
       </Button>
-      {renderProperties()}
     </div>
   );
 };
